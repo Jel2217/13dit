@@ -10,8 +10,16 @@ config_version=4
 
 [application]
 
-config/name="13DIT project"
-config/icon="res://icon.png"
+config/name="13DIT"
+run/main_scene="res://Scenes/titlescreen.tscn"
+config/icon="res://Assets/icon.png"
+
+[display]
+
+window/size/width=1280
+window/size/height=720
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
 
 [gui]
 
