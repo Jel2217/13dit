@@ -10,6 +10,7 @@ bounce = 0.41
 extents = Vector2( 40, 40 )
 
 [node name="Counter" type="RigidBody2D"]
+scale = Vector2( 1.231, 1.231 )
 mode = 2
 physics_material_override = SubResource( 2 )
 gravity_scale = 20.0

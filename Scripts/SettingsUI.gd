@@ -5,10 +5,6 @@ func _ready():
 	hide()
 
 
-func _on_TitleUI_hide():
-	print("YES")
-	show()
-
 func _on_SBack_pressed():
 	hide()
 
@@ -26,3 +22,7 @@ func _on_Windowed_pressed():
 	
 
 # TODO slider and audio functionality
+
+
+func _on_Settings_pressed():
+	show() # Replace with function body.

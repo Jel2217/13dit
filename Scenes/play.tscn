@@ -1,13 +1,157 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=17 format=2]
 
-[ext_resource path="res://Assets/play.png" type="Texture" id=1]
+[ext_resource path="res://Assets/flag.png" type="Texture" id=1]
 [ext_resource path="res://Assets/background.png" type="Texture" id=2]
-[ext_resource path="res://PlayUI.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Menu_icon_icon-icons.com_71858.png" type="Texture" id=3]
 [ext_resource path="res://Resources/buttons.tres" type="Theme" id=4]
 [ext_resource path="res://tileset.tres" type="TileSet" id=5]
 [ext_resource path="res://Scenes/Game.gd" type="Script" id=6]
-[ext_resource path="res://Scenes/Countercounter.gd" type="Script" id=7]
-[ext_resource path="res://Assets/Counter1.png" type="Texture" id=8]
+[ext_resource path="res://Assets/Counter1.png" type="Texture" id=7]
+[ext_resource path="res://Assets/Counter2.png" type="Texture" id=8]
+[ext_resource path="res://Resources/blur.tres" type="Shader" id=9]
+[ext_resource path="res://Scenes/Winscreen.gd" type="Script" id=10]
+[ext_resource path="res://Scenes/Forfeitscreen.gd" type="Script" id=11]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends TileMap
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = \"text\"
+var tiles_using
+var tile_removed = false
+var turn_active = false
+var player_num = \"1\"
+
+var counter_sprite
+var clear_sprite
+
+var timer_activated = false
+var timer = Timer.new()
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	counter_sprite = load(\"res://Assets/Counter\"+player_num+\".png\")
+	clear_sprite = load(\"res://Assets/clearcounter.png\")
+	tiles_using = get_used_cells()
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	if turn_active:
+#		get_node(\"Player\" + player_num + \"Sprite\").texture = counter_sprite
+#		turn_active = false
+#		print(\"YES\")
+##		if tiles_using.size() != 0:
+##			set_cellv(tiles_using[-1], -1)
+##			tiles_using.resize(tiles_using.size()-1)
+##		tile_removed = false
+#	elif tile_removed:
+#		pass
+#		print(turn_active)
+#		get_node(\"Player\" + player_num + \"Sprite\").texture = clear_sprite
+#		if tiles_using.size() != 0:
+#			set_cellv(tiles_using[-1], -1)
+#			tiles_using.resize(tiles_using.size()-1)
+#		tile_removed = false
+##		tile_removed = false
+#
+	
+	
+func _process(delta):
+	if turn_active:
+		if tiles_using.size() == 0:
+			if timer_activated != true: 
+				timer.connect(\"timeout\", get_node(\"../../Winscreen\"),\"player_won\", [0, get_node(\"../../Game\").turn_count])
+				timer.wait_time = 3
+				timer.one_shot = true
+				add_child(timer)
+				timer.start()
+				timer_activated = true
+#				print(\"timer started\")
+		else:
+			get_node(\"Player\" + player_num + \"Sprite\").texture = counter_sprite
+			turn_active = false
+#			print(\"YES\")
+			if tiles_using.size() != 0:
+				set_cellv(tiles_using[-1], -1)
+				tiles_using.resize(tiles_using.size()-1)
+			tile_removed = false
+	elif tile_removed:
+		pass
+#		print(turn_active)
+		get_node(\"Player\" + player_num + \"Sprite\").texture = clear_sprite
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends TileMap
+
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = \"text\"
+var tiles_using
+var tile_removed = false
+var turn_active = false
+var player_num = \"2\"
+
+var counter_sprite
+var clear_sprite
+
+var timer = Timer.new()
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	counter_sprite = load(\"res://Assets/Counter\"+player_num+\".png\")
+	clear_sprite = load(\"res://Assets/clearcounter.png\")
+	tiles_using = get_used_cells()
+	pass # Replace with function body.
+
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	if turn_active:
+		print(tiles_using.size())
+		if tiles_using.size() == 0: 
+			timer.connect(\"timeout\", get_node(\"../../Winscreen\"),\"player_won\", [0, get_node(\"../../Game\").turn_count])
+			timer.wait_time = 3
+			timer.one_shot = true
+			add_child(timer)
+			timer.start()
+			print(\"timer started\")
+		else:
+			get_node(\"Player\" + player_num + \"Sprite\").texture = counter_sprite
+			turn_active = false
+			print(\"YES\")
+			if tiles_using.size() != 0:
+				set_cellv(tiles_using[-1], -1)
+				tiles_using.resize(tiles_using.size()-1)
+			tile_removed = false
+	elif tile_removed:
+		pass
+#		print(turn_active)
+		get_node(\"Player\" + player_num + \"Sprite\").texture = clear_sprite
+
+		
+"
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = ExtResource( 9 )
+shader_param/blur_amount = 5.0
+
+[sub_resource type="StyleBoxFlat" id=4]
+corner_radius_top_left = 75
+corner_radius_top_right = 75
+corner_radius_bottom_right = 75
+corner_radius_bottom_left = 75
+
+[sub_resource type="StyleBoxFlat" id=5]
+bg_color = Color( 0.764706, 0.764706, 0.764706, 0.541176 )
+corner_radius_top_left = 75
+corner_radius_top_right = 75
+corner_radius_bottom_right = 75
+corner_radius_bottom_left = 75
 
 [node name="Play" type="Node2D"]
 
@@ -17,76 +161,312 @@ margin_bottom = 720.0
 texture = ExtResource( 2 )
 expand = true
 stretch_mode = 1
+__meta__ = {
+"_edit_lock_": true
+}
 
 [node name="Game" type="Node2D" parent="."]
-position = Vector2( 40, 0 )
 script = ExtResource( 6 )
 
 [node name="TileMap" type="TileMap" parent="Game"]
 modulate = Color( 1, 1, 1, 0.756863 )
 tile_set = ExtResource( 5 )
-cell_size = Vector2( 80, 80 )
+cell_size = Vector2( 98, 98 )
 format = 1
-tile_data = PoolIntArray( 131076, -1610612736, 0, 131077, -1610612736, 0, 131078, -1610612736, 0, 131079, -1610612736, 0, 131080, -1610612736, 0, 131081, -1610612736, 0, 131082, -1610612736, 0, 196612, -1610612736, 0, 196613, -1610612736, 0, 196614, -1610612736, 0, 196615, -1610612736, 0, 196616, -1610612736, 0, 196617, -1610612736, 0, 196618, -1610612736, 0, 262148, -1610612736, 0, 262149, -1610612736, 0, 262150, -1610612736, 0, 262151, -1610612736, 0, 262152, 0, 0, 262153, -1610612736, 0, 262154, 0, 0, 327684, -1610612736, 0, 327685, -1610612736, 0, 327686, -1610612736, 0, 327687, -1610612736, 0, 327688, -1610612736, 0, 327689, 0, 0, 327690, 0, 0, 393220, -1610612736, 0, 393221, -1610612736, 0, 393222, -1610612736, 0, 393223, -1610612736, 0, 393224, -1610612736, 0, 393225, -1610612736, 0, 393226, -1610612736, 0, 458756, -1610612736, 0, 458757, -1610612736, 0, 458758, -1610612736, 0, 458759, -1610612736, 0, 458760, -1610612736, 0, 458761, -1610612736, 0, 458762, 0, 0, 524292, 6, 0, 524293, 6, 0, 524294, 6, 0, 524295, 6, 0, 524296, 6, 0, 524297, 6, 0, 524298, 6, 0 )
+tile_data = PoolIntArray( 65539, 0, 0, 65540, 0, 0, 65541, 0, 0, 65542, 0, 0, 65543, 0, 0, 65544, 0, 0, 65545, 0, 0, 131075, 0, 0, 131076, 0, 0, 131077, 0, 0, 131078, 0, 0, 131079, 0, 0, 131080, 0, 0, 131081, 0, 0, 196611, 0, 0, 196612, 0, 0, 196613, 0, 0, 196614, 0, 0, 196615, 0, 0, 196616, 0, 0, 196617, 0, 0, 262147, 0, 0, 262148, 0, 0, 262149, 0, 0, 262150, 0, 0, 262151, 0, 0, 262152, 0, 0, 262153, 0, 0, 327683, 0, 0, 327684, -1610612736, 0, 327685, -1610612736, 0, 327686, -1610612736, 0, 327687, -1610612736, 0, 327688, 0, 0, 327689, 0, 0, 393219, 0, 0, 393220, 0, 0, 393221, 0, 0, 393222, 0, 0, 393223, 0, 0, 393224, 0, 0, 393225, 0, 0, 458755, 6, 0, 458756, 6, 0, 458757, 6, 0, 458758, 6, 0, 458759, 6, 0, 458760, 6, 0, 458761, 6, 0 )
 
 [node name="Player1Tiles" type="TileMap" parent="Game"]
-visible = false
+position = Vector2( 40, 0 )
 scale = Vector2( 0.75, 0.75 )
 tile_set = ExtResource( 5 )
 cell_size = Vector2( 80, 80 )
 format = 1
-tile_data = PoolIntArray( 131073, 1, 0, 131074, 1, 0, 196609, 1, 0, 196610, 1, 0, 262145, 1, 0, 262146, 1, 0, 327681, 1, 0, 327682, 1, 0, 393217, 1, 0, 393218, 1, 0, 458753, 1, 0, 458754, 1, 0, 524289, 1, 0, 524290, 1, 0, 589825, 1, 0, 589826, 1, 0, 655361, 1, 0, 655362, 1, 0, 720897, 1, 0, 720898, 1, 0 )
-script = ExtResource( 7 )
+tile_data = PoolIntArray( 131072, 1, 0, 131073, 1, 0, 196608, 1, 0, 196609, 1, 0, 262144, 1, 0, 262145, 1, 0, 327680, 1, 0, 327681, 1, 0, 393216, 1, 0, 393217, 1, 0, 458752, 1, 0, 458753, 1, 0, 524288, 1, 0, 524289, 1, 0, 589824, 1, 0, 589825, 1, 0, 655360, 1, 0, 655361, 1, 0, 720896, 1, 0, 720897, 1, 0 )
+script = SubResource( 1 )
 
 [node name="Player1Sprite" type="Sprite" parent="Game/Player1Tiles"]
-position = Vector2( 160, 80 )
+position = Vector2( 80, 80 )
+scale = Vector2( 2, 2 )
+texture = ExtResource( 7 )
+
+[node name="Player2Tiles" type="TileMap" parent="Game"]
+scale = Vector2( 0.75, 0.75 )
+tile_set = ExtResource( 5 )
+cell_size = Vector2( 80, 80 )
+format = 1
+tile_data = PoolIntArray( 131091, 4, 0, 131092, 4, 0, 196627, 4, 0, 196628, 4, 0, 262163, 4, 0, 262164, 4, 0, 327699, 4, 0, 327700, 4, 0, 393235, 4, 0, 393236, 4, 0, 458771, 4, 0, 458772, 4, 0, 524307, 4, 0, 524308, 4, 0, 589843, 4, 0, 589844, 4, 0, 655379, 4, 0, 655380, 4, 0, 720915, 4, 0, 720916, 4, 0, 786451, 4, 0 )
+script = SubResource( 2 )
+
+[node name="Player2Sprite" type="Sprite" parent="Game/Player2Tiles"]
+position = Vector2( 1600, 80 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 8 )
 
-[node name="Player2Tiles" type="TileMap" parent="Game"]
+[node name="Winscreen" type="Panel" parent="."]
+pause_mode = 2
 visible = false
-scale = Vector2( 0.75, 0.75 )
-tile_set = ExtResource( 5 )
-cell_size = Vector2( 80, 80 )
-format = 1
-tile_data = PoolIntArray( 131089, 4, 0, 131090, 4, 0, 196625, 4, 0, 196626, 4, 0, 262161, 4, 0, 262162, 4, 0, 327697, 4, 0, 327698, 4, 0, 393233, 4, 0, 393234, 4, 0, 458769, 4, 0, 458770, 4, 0, 524305, 4, 0, 524306, 4, 0, 589841, 4, 0, 589842, 4, 0, 655377, 4, 0, 655378, 4, 0, 720913, 4, 0, 720914, 4, 0 )
-script = ExtResource( 7 )
+material = SubResource( 3 )
+margin_left = 236.0
+margin_top = 96.0
+margin_right = 1027.0
+margin_bottom = 645.0
+custom_styles/panel = SubResource( 4 )
+script = ExtResource( 10 )
 
-[node name="UI" type="Control" parent="."]
-visible = false
-margin_right = 40.0
-margin_bottom = 40.0
-script = ExtResource( 3 )
+[node name="Color" type="Panel" parent="Winscreen"]
+margin_right = 791.0
+margin_bottom = 549.0
+custom_styles/panel = SubResource( 5 )
+__meta__ = {
+"_edit_lock_": true
+}
 
-[node name="Title" type="Sprite" parent="UI"]
-position = Vector2( 584, 522 )
-scale = Vector2( 0.472043, 0.472043 )
-texture = ExtResource( 1 )
-offset = Vector2( -959.658, -838.907 )
+[node name="Buttons" type="HBoxContainer" parent="Winscreen"]
+anchor_left = 0.072
+anchor_top = 0.309
+anchor_right = 0.072
+anchor_bottom = 0.309
+margin_left = 4.048
+margin_top = 219.359
+margin_right = 693.048
+margin_bottom = 329.359
+custom_constants/separation = 50
+alignment = 1
 
-[node name="PBack" type="Button" parent="UI"]
-margin_left = 100.0
-margin_top = 584.0
-margin_right = 500.0
-margin_bottom = 690.0
-rect_min_size = Vector2( 400, 106 )
-size_flags_horizontal = 2
-size_flags_vertical = 2
+[node name="MainMenu" type="Button" parent="Winscreen/Buttons"]
+margin_left = 19.0
+margin_right = 319.0
+margin_bottom = 110.0
+rect_min_size = Vector2( 300, 0 )
 theme = ExtResource( 4 )
 theme_type_variation = "Base"
-text = "Back"
+text = "Main Menu"
 
-[node name="PStart" type="Button" parent="UI"]
-margin_left = 780.0
-margin_top = 584.0
-margin_right = 1180.0
-margin_bottom = 690.0
-rect_min_size = Vector2( 400, 106 )
-size_flags_horizontal = 2
-size_flags_vertical = 2
+[node name="Replay" type="Button" parent="Winscreen/Buttons"]
+margin_left = 369.0
+margin_right = 669.0
+margin_bottom = 110.0
+rect_min_size = Vector2( 300, 0 )
 theme = ExtResource( 4 )
 theme_type_variation = "Base"
-text = "Start"
+text = "Replay"
 
-[connection signal="pressed" from="UI/PBack" to="UI" method="_on_PBack_pressed"]
-[connection signal="pressed" from="UI/PStart" to="UI" method="_on_PStart_pressed"]
+[node name="Results" type="Label" parent="Winscreen"]
+margin_left = 283.0
+margin_top = -2.0
+margin_right = 443.0
+margin_bottom = 104.0
+rect_scale = Vector2( 1.5, 1.5 )
+theme = ExtResource( 4 )
+text = "Results"
+align = 1
+
+[node name="Winner" type="Label" parent="Winscreen"]
+margin_left = 250.0
+margin_top = 133.0
+margin_right = 550.0
+margin_bottom = 263.0
+theme = ExtResource( 4 )
+text = "Player 1 won!"
+align = 1
+
+[node name="Turn" type="Label" parent="Winscreen"]
+margin_left = 287.0
+margin_top = 251.0
+margin_right = 526.0
+margin_bottom = 357.0
+theme = ExtResource( 4 )
+text = "Turn: 8"
+align = 1
+
+[node name="Buttons" type="HBoxContainer" parent="."]
+margin_left = 171.0
+margin_top = 606.0
+margin_right = 644.0
+margin_bottom = 712.0
+
+[node name="Button" type="Button" parent="Buttons"]
+margin_right = 50.0
+margin_bottom = 106.0
+rect_min_size = Vector2( 50, 50 )
+focus_mode = 0
+theme = ExtResource( 4 )
+theme_type_variation = "Ingame"
+enabled_focus_mode = 0
+icon = ExtResource( 3 )
+expand_icon = true
+
+[node name="Forfeit" type="Button" parent="Buttons"]
+margin_left = 54.0
+margin_right = 104.0
+margin_bottom = 106.0
+rect_min_size = Vector2( 50, 0 )
+focus_mode = 0
+theme = ExtResource( 4 )
+theme_type_variation = "Ingame"
+enabled_focus_mode = 0
+icon = ExtResource( 1 )
+expand_icon = true
+
+[node name="TurnCount" type="Label" parent="."]
+margin_left = 996.0
+margin_top = 637.0
+margin_right = 1150.0
+margin_bottom = 743.0
+rect_scale = Vector2( 0.75, 0.75 )
+theme = ExtResource( 4 )
+text = "Turn: 1"
+
+[node name="Forfeitscreen" type="Panel" parent="."]
+pause_mode = 2
+visible = false
+material = SubResource( 3 )
+margin_left = 321.0
+margin_top = 171.0
+margin_right = 931.0
+margin_bottom = 584.0
+custom_styles/panel = SubResource( 4 )
+script = ExtResource( 11 )
+
+[node name="Color" type="Panel" parent="Forfeitscreen"]
+margin_right = 610.0
+margin_bottom = 413.0
+custom_styles/panel = SubResource( 5 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Buttons" type="HBoxContainer" parent="Forfeitscreen"]
+anchor_left = 0.072
+anchor_top = 0.309
+anchor_right = 0.072
+anchor_bottom = 0.309
+margin_left = -27.92
+margin_top = 157.383
+margin_right = 544.08
+margin_bottom = 263.383
+custom_constants/separation = 50
+alignment = 1
+
+[node name="Yes" type="Button" parent="Forfeitscreen/Buttons"]
+margin_left = 6.0
+margin_right = 256.0
+margin_bottom = 106.0
+rect_min_size = Vector2( 250, 0 )
+theme = ExtResource( 4 )
+theme_type_variation = "Base"
+text = "Yes"
+
+[node name="No" type="Button" parent="Forfeitscreen/Buttons"]
+margin_left = 306.0
+margin_right = 565.0
+margin_bottom = 106.0
+rect_min_size = Vector2( 259, 0 )
+theme = ExtResource( 4 )
+theme_type_variation = "Base"
+text = "No"
+
+[node name="Player" type="Label" parent="Forfeitscreen"]
+margin_left = 155.0
+margin_top = -14.0
+margin_right = 455.0
+margin_bottom = 116.0
+theme = ExtResource( 4 )
+text = "Player 1"
+align = 1
+
+[node name="Question" type="Label" parent="Forfeitscreen"]
+margin_left = 50.0
+margin_top = 68.0
+margin_right = 559.0
+margin_bottom = 290.0
+theme = ExtResource( 4 )
+text = "Are you sure you would like to forfeit?"
+align = 1
+autowrap = true
+
+[node name="Menuscreen" type="Panel" parent="."]
+pause_mode = 2
+visible = false
+material = SubResource( 3 )
+margin_left = 236.0
+margin_top = 96.0
+margin_right = 1027.0
+margin_bottom = 645.0
+custom_styles/panel = SubResource( 4 )
+script = ExtResource( 10 )
+
+[node name="Color" type="Panel" parent="Menuscreen"]
+margin_right = 791.0
+margin_bottom = 549.0
+custom_styles/panel = SubResource( 5 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Buttons" type="HBoxContainer" parent="Menuscreen"]
+anchor_left = 0.072
+anchor_top = 0.309
+anchor_right = 0.072
+anchor_bottom = 0.309
+margin_left = 4.048
+margin_top = 219.359
+margin_right = 693.048
+margin_bottom = 329.359
+custom_constants/separation = 50
+alignment = 1
+
+[node name="MainMenu" type="Button" parent="Menuscreen/Buttons"]
+margin_left = 19.0
+margin_right = 319.0
+margin_bottom = 110.0
+rect_min_size = Vector2( 300, 0 )
+theme = ExtResource( 4 )
+theme_type_variation = "Base"
+text = "Main Menu"
+
+[node name="Replay" type="Button" parent="Menuscreen/Buttons"]
+margin_left = 369.0
+margin_right = 669.0
+margin_bottom = 110.0
+rect_min_size = Vector2( 300, 0 )
+theme = ExtResource( 4 )
+theme_type_variation = "Base"
+text = "Replay"
+
+[node name="Results" type="Label" parent="Menuscreen"]
+margin_left = 283.0
+margin_top = -2.0
+margin_right = 443.0
+margin_bottom = 104.0
+rect_scale = Vector2( 1.5, 1.5 )
+theme = ExtResource( 4 )
+text = "Results"
+align = 1
+
+[node name="Winner" type="Label" parent="Menuscreen"]
+margin_left = 250.0
+margin_top = 133.0
+margin_right = 550.0
+margin_bottom = 263.0
+theme = ExtResource( 4 )
+text = "Player 1 won!"
+align = 1
+
+[node name="Turn" type="Label" parent="Menuscreen"]
+margin_left = 287.0
+margin_top = 251.0
+margin_right = 526.0
+margin_bottom = 357.0
+theme = ExtResource( 4 )
+text = "Turn: 8"
+align = 1
+
+[connection signal="pressed" from="Winscreen/Buttons/MainMenu" to="Winscreen" method="_on_MainMenu_pressed"]
+[connection signal="pressed" from="Winscreen/Buttons/Replay" to="Winscreen" method="_on_Replay_pressed"]
+[connection signal="pressed" from="Buttons/Forfeit" to="Forfeitscreen" method="_on_Forfeit_pressed"]
+[connection signal="pressed" from="Forfeitscreen/Buttons/Yes" to="Game" method="_on_Yes_pressed"]
+[connection signal="pressed" from="Forfeitscreen/Buttons/Yes" to="Forfeitscreen" method="_on_Yes_pressed"]
+[connection signal="pressed" from="Forfeitscreen/Buttons/No" to="Forfeitscreen" method="_on_No_pressed"]
+[connection signal="pressed" from="Menuscreen/Buttons/MainMenu" to="Menuscreen" method="_on_MainMenu_pressed"]
+[connection signal="pressed" from="Menuscreen/Buttons/Replay" to="Menuscreen" method="_on_Replay_pressed"]

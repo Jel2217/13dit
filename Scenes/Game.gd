@@ -15,10 +15,14 @@ var counter_pos
 var bounce_counter = 0
 var can_drop = true
 
-var turn_count = 0
+var turn_count = 1
 var turn = 1
 var player_count = 2
 var current_sprite 
+
+var game_tied = false
+
+var timer = Timer.new()
 
 onready var tiles = $TileMap
 # Called when the node enters the scene tree for the first time.
@@ -35,42 +39,63 @@ func _process(delta):
 	mouse_tile_pos = tiles.world_to_map(mouse_pos)
 	
 	match turn:
+		0:
+			pass
 		1: 
 			current_sprite = counter_1_sprite
 #			print("Player 1's turn")
 			land_counter(1, 3, 1)
+#			get_node("Player"+ String(turn)+"Tiles").turn_active = true
+#			$Player1Tiles.turn_active = true
 		2:
 			current_sprite = counter_2_sprite
 #			print("Player 2's turn")
 			land_counter(4, 5, 2)
-	
+#			$Player2Tiles.turn_active = true
 
 
 func land_counter(tile_id, clear_tile_id, player):
 #	print(can_drop)
 #	print(bounce_counter)
-	tile_pos = tiles.map_to_world(mouse_tile_pos)
+	tile_pos = tiles.map_to_world(tiles.to_local(mouse_tile_pos))
 	if is_instance_valid(currentCounter):
 		can_drop = false
 		for i in (board_tiles.max()[0]-board_tiles.min()[0]+1):
 			tiles.set_cellv(Vector2(i+board_tiles.min()[0], board_tiles.min()[1]-1), -1)
-		if bounce_counter >= 5:
+		if bounce_counter >= 10:
 			can_drop = true
 			bounce_counter = 0
 			counter_pos = currentCounter.position
+			
+			turn_count += 1
 #			print("Landed at: " + String(tiles.world_to_map(currentCounter.position)))
 			var cell_pos = tiles.world_to_map(Vector2(currentCounter.position))
-			tiles.set_cellv(cell_pos,tile_id)
+			if tiles.get_cell(cell_pos[0], cell_pos[1]+1) == 0:
+				tiles.set_cell(cell_pos[0], cell_pos[1]+1, tile_id)
+			else:
+				tiles.set_cellv(cell_pos,tile_id)
 			var winner = register(cell_pos, tile_id, player)
 			if winner != null:
+				turn = 0
 				print("Player " + String(winner.player) + " won!")
 				print(winner.counters)
 				for i in winner.counters:
-					tiles.set_cellv(i, -1)
-			if turn == player_count:
+					tiles.set_cellv(i, 7)
+					pass
+			if turn == 0:
+				can_drop = false
+				timer.connect("timeout", get_node("../Winscreen"),"player_won", [player, turn_count])
+				timer.wait_time = 3
+				timer.one_shot = true
+				add_child(timer)
+				timer.start()
+			elif turn == player_count:
 				turn = 1
+				get_node("Player"+ String(turn)+"Tiles").turn_active = true
 			else:
 				turn += 1
+				get_node("Player"+ String(turn)+"Tiles").turn_active = true
+			get_node("../TurnCount").text = "Turn: " + String(turn_count)
 			currentCounter.free()
 		elif currentCounter.get_colliding_bodies().size() == 1:
 			bounce_counter += 1
@@ -89,7 +114,7 @@ func land_counter(tile_id, clear_tile_id, player):
 #			currentCounter.free()
 	elif (mouse_tile_pos[0] >= board_tiles.min()[0]) and (mouse_tile_pos[0] <= board_tiles.max()[0]) and can_drop:
 		for i in (board_tiles.max()[0]-board_tiles.min()[0]+1):
-			if ((i+board_tiles.min()[0])==mouse_tile_pos[0]):
+			if ((i+board_tiles.min()[0])==mouse_tile_pos[0] and tiles.get_cell(mouse_tile_pos[0], board_tiles.min()[1]) == 0):
 				pass
 				tiles.set_cellv(Vector2(mouse_tile_pos[0], board_tiles.min()[1]-1), clear_tile_id)
 			else:
@@ -136,11 +161,11 @@ func register(counter_pos, tile_id, player):
 	horizontal_tiles.sort()
 	for i in horizontal_tiles:
 		if (tiles.get_cellv(i) == tile_id):
-			if (tiles.get_cell(i[0]-1, i[1])!= tile_id):
+			if (tiles.get_cell(i[0]-1, i[1]) != tile_id and counters_in_a_row < 4):
 				counters_in_a_row = 1
 				winning_counters.clear()
-#				winning_counters.append(i)
-			else:
+				winning_counters.append(i)
+			elif (counters_in_a_row < 4):
 				counters_in_a_row += 1
 				winning_counters.append(i)
 		
@@ -203,7 +228,7 @@ func register(counter_pos, tile_id, player):
 #		tiles.set_cellv(i, tile_id)
 #		print(i)
 		if (tiles.get_cellv(i) == tile_id):
-			print(i)
+#			print(i)
 			counters_in_a_row += 1
 			winning_counters.append(i)
 		elif counters_in_a_row < 4:
@@ -226,7 +251,7 @@ class array_sorter:
 func _input(event):
    # Mouse in viewport coordinates.
 	if event.is_action_pressed("click") and can_drop:  
-		if (mouse_tile_pos[0] >= board_tiles.min()[0]) and (mouse_tile_pos[0] <= board_tiles.max()[0]):
+		if (mouse_tile_pos[0] >= board_tiles.min()[0]) and (mouse_tile_pos[0] <= board_tiles.max()[0]) and (tiles.get_cell(mouse_tile_pos[0], board_tiles.min()[1]) == 0):
 			print("Counter dropped at: ", mouse_tile_pos[0]-board_tiles.min()[0])
 			currentCounter = counter.instance()
 			add_child(currentCounter)
@@ -235,3 +260,8 @@ func _input(event):
 			get_node("Player"+String(turn)+"Tiles").tile_removed = true
 	
 	
+
+
+func _on_Yes_pressed():
+	get_node("../Winscreen").player_won(turn, turn_count)
+	pass # Replace with function body.

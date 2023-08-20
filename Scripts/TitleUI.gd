@@ -6,7 +6,9 @@ func _ready():
 	show()
 
 func _on_Play_pressed():
-	get_tree().change_scene("res://Scenes/play.tscn")
+#	get_tree().change_scene("res://Scenes/play.tscn")
+	hide()
+	
 	pass # Replace with function body.
 
 
@@ -20,3 +22,7 @@ func _on_Quit_pressed():
 
 func _on_SettingsUI_hide():
 	show()
+
+
+func _on_PBack_pressed():
+	show() # Replace with function body.
