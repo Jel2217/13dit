@@ -14,6 +14,11 @@ config/name="13DIT"
 run/main_scene="res://Scenes/titlescreen.tscn"
 config/icon="res://Assets/icon.png"
 
+[autoload]
+
+AudioStreamManager="*res://Scripts/audio_manager.gd"
+Global="*res://Scripts/global.gd"
+
 [display]
 
 window/size/width=1280

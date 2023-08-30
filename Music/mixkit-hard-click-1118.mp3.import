@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/mixkit-hard-click-1118.mp3-d56e30890fd1939b6a9f6ea2faba6f81.mp3str"
+
+[deps]
+
+source_file="res://Music/mixkit-hard-click-1118.mp3"
+dest_files=[ "res://.import/mixkit-hard-click-1118.mp3-d56e30890fd1939b6a9f6ea2faba6f81.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

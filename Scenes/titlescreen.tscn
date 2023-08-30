@@ -1,7 +1,7 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://Assets/grabber.png" type="Texture" id=1]
-[ext_resource path="res://Assets/background.png" type="Texture" id=2]
+[ext_resource path="res://Assets/new_background.jpg" type="Texture" id=2]
 [ext_resource path="res://Assets/scrollbg.png" type="Texture" id=3]
 [ext_resource path="res://Assets/title.png" type="Texture" id=4]
 [ext_resource path="res://Scripts/TitleUI.gd" type="Script" id=5]
@@ -9,7 +9,12 @@
 [ext_resource path="res://Resources/Font.tres" type="DynamicFont" id=7]
 [ext_resource path="res://Resources/buttons.tres" type="Theme" id=8]
 [ext_resource path="res://Assets/play.png" type="Texture" id=9]
-[ext_resource path="res://PlayUI.gd" type="Script" id=10]
+[ext_resource path="res://Scripts/PlayUI.gd" type="Script" id=10]
+[ext_resource path="res://Music/Home_v1.mp3" type="AudioStream" id=11]
+[ext_resource path="res://Assets/80px_left_tri.png" type="Texture" id=12]
+[ext_resource path="res://Assets/80px_left_tri_dark.png" type="Texture" id=13]
+[ext_resource path="res://Assets/80px_left_tri_darker.png" type="Texture" id=14]
+[ext_resource path="res://Assets/80px_left_tri_darkest.png" type="Texture" id=15]
 
 [sub_resource type="StyleBoxEmpty" id=2]
 
@@ -112,24 +117,24 @@ theme_type_variation = "Deactivated"
 enabled_focus_mode = 0
 text = "Windowed"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SettingsUI/VBoxContainer"]
+[node name="Master" type="HBoxContainer" parent="SettingsUI/VBoxContainer"]
 margin_top = 181.0
 margin_right = 862.0
 margin_bottom = 287.0
 
-[node name="Label" type="Label" parent="SettingsUI/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="SettingsUI/VBoxContainer/Master"]
 margin_right = 242.0
 margin_bottom = 106.0
 rect_min_size = Vector2( 0, 106 )
 theme = ExtResource( 8 )
 text = "Main Volume"
 
-[node name="Scrollbg" type="Sprite" parent="SettingsUI/VBoxContainer/HBoxContainer"]
+[node name="Scrollbg" type="Sprite" parent="SettingsUI/VBoxContainer/Master"]
 position = Vector2( 548, 50 )
 scale = Vector2( 0.691566, 0.489362 )
 texture = ExtResource( 3 )
 
-[node name="HSlider" type="HSlider" parent="SettingsUI/VBoxContainer/HBoxContainer"]
+[node name="MasterSlider" type="HSlider" parent="SettingsUI/VBoxContainer/Master"]
 margin_left = 246.0
 margin_right = 846.0
 margin_bottom = 100.0
@@ -141,24 +146,24 @@ custom_styles/grabber_area_highlight = SubResource( 3 )
 custom_styles/grabber_area = SubResource( 4 )
 value = 50.0
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="SettingsUI/VBoxContainer"]
+[node name="Sound" type="HBoxContainer" parent="SettingsUI/VBoxContainer"]
 margin_top = 291.0
 margin_right = 862.0
 margin_bottom = 397.0
 
-[node name="Label" type="Label" parent="SettingsUI/VBoxContainer/HBoxContainer2"]
+[node name="Label" type="Label" parent="SettingsUI/VBoxContainer/Sound"]
 margin_right = 242.0
 margin_bottom = 106.0
 rect_min_size = Vector2( 242, 106 )
 theme = ExtResource( 8 )
 text = "Sound"
 
-[node name="Scrollbg" type="Sprite" parent="SettingsUI/VBoxContainer/HBoxContainer2"]
+[node name="Scrollbg" type="Sprite" parent="SettingsUI/VBoxContainer/Sound"]
 position = Vector2( 548, 50 )
 scale = Vector2( 0.691566, 0.489362 )
 texture = ExtResource( 3 )
 
-[node name="HSlider" type="HSlider" parent="SettingsUI/VBoxContainer/HBoxContainer2"]
+[node name="SoundSlider" type="HSlider" parent="SettingsUI/VBoxContainer/Sound"]
 margin_left = 246.0
 margin_right = 846.0
 margin_bottom = 100.0
@@ -170,24 +175,24 @@ custom_styles/grabber_area_highlight = SubResource( 3 )
 custom_styles/grabber_area = SubResource( 4 )
 value = 50.0
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="SettingsUI/VBoxContainer"]
+[node name="Music" type="HBoxContainer" parent="SettingsUI/VBoxContainer"]
 margin_top = 401.0
 margin_right = 862.0
 margin_bottom = 507.0
 
-[node name="Label" type="Label" parent="SettingsUI/VBoxContainer/HBoxContainer3"]
+[node name="Label" type="Label" parent="SettingsUI/VBoxContainer/Music"]
 margin_right = 242.0
 margin_bottom = 106.0
 rect_min_size = Vector2( 242, 0 )
 theme = ExtResource( 8 )
 text = "Music"
 
-[node name="Scrollbg" type="Sprite" parent="SettingsUI/VBoxContainer/HBoxContainer3"]
+[node name="Scrollbg" type="Sprite" parent="SettingsUI/VBoxContainer/Music"]
 position = Vector2( 548, 50 )
 scale = Vector2( 0.691566, 0.489362 )
 texture = ExtResource( 3 )
 
-[node name="HSlider" type="HSlider" parent="SettingsUI/VBoxContainer/HBoxContainer3"]
+[node name="MusicSlider" type="HSlider" parent="SettingsUI/VBoxContainer/Music"]
 margin_left = 246.0
 margin_right = 846.0
 margin_bottom = 100.0
@@ -212,7 +217,6 @@ theme_type_variation = "Base"
 text = "Back"
 
 [node name="PlayMenuUI" type="Control" parent="."]
-visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 script = ExtResource( 10 )
@@ -247,6 +251,95 @@ theme = ExtResource( 8 )
 theme_type_variation = "Base"
 text = "Start"
 
+[node name="VBoxContainer" type="VBoxContainer" parent="PlayMenuUI"]
+margin_left = 37.0
+margin_top = 65.0
+margin_right = 1199.0
+margin_bottom = 559.0
+custom_constants/separation = 70
+alignment = 1
+
+[node name="CounterNum" type="HBoxContainer" parent="PlayMenuUI/VBoxContainer"]
+margin_top = 102.0
+margin_right = 1162.0
+margin_bottom = 208.0
+custom_constants/separation = 20
+alignment = 1
+
+[node name="LeftCounterTri" type="TextureButton" parent="PlayMenuUI/VBoxContainer/CounterNum"]
+margin_left = 357.0
+margin_top = 13.0
+margin_right = 437.0
+margin_bottom = 93.0
+size_flags_vertical = 4
+texture_normal = ExtResource( 12 )
+texture_pressed = ExtResource( 14 )
+texture_hover = ExtResource( 13 )
+texture_disabled = ExtResource( 15 )
+
+[node name="Label" type="Label" parent="PlayMenuUI/VBoxContainer/CounterNum"]
+margin_left = 457.0
+margin_right = 507.0
+margin_bottom = 106.0
+rect_min_size = Vector2( 50, 60 )
+theme = ExtResource( 8 )
+text = "4"
+align = 1
+clip_text = true
+
+[node name="RightCounterTri" type="TextureButton" parent="PlayMenuUI/VBoxContainer/CounterNum"]
+margin_left = 527.0
+margin_top = 13.0
+margin_right = 607.0
+margin_bottom = 93.0
+size_flags_vertical = 4
+texture_normal = ExtResource( 12 )
+texture_pressed = ExtResource( 14 )
+texture_hover = ExtResource( 13 )
+texture_disabled = ExtResource( 15 )
+flip_h = true
+
+[node name="Text" type="Label" parent="PlayMenuUI/VBoxContainer/CounterNum"]
+margin_left = 627.0
+margin_right = 804.0
+margin_bottom = 106.0
+theme = ExtResource( 8 )
+text = "in a row"
+
+[node name="NameEdits" type="HBoxContainer" parent="PlayMenuUI/VBoxContainer"]
+margin_top = 278.0
+margin_right = 1162.0
+margin_bottom = 392.0
+custom_constants/separation = 50
+alignment = 1
+
+[node name="Player1LineEdit" type="LineEdit" parent="PlayMenuUI/VBoxContainer/NameEdits"]
+margin_left = 206.0
+margin_right = 556.0
+margin_bottom = 114.0
+rect_min_size = Vector2( 350, 0 )
+theme = ExtResource( 8 )
+theme_type_variation = "Activated"
+align = 1
+max_length = 10
+placeholder_text = "Enter P1 name"
+
+[node name="Player2LineEdit" type="LineEdit" parent="PlayMenuUI/VBoxContainer/NameEdits"]
+margin_left = 606.0
+margin_right = 956.0
+margin_bottom = 114.0
+rect_min_size = Vector2( 350, 0 )
+theme = ExtResource( 8 )
+theme_type_variation = "Activated"
+align = 1
+max_length = 10
+placeholder_text = "Enter P2 name"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 11 )
+autoplay = true
+bus = "Music"
+
 [connection signal="pressed" from="TitleUI/Buttons/Play" to="TitleUI" method="_on_Play_pressed"]
 [connection signal="pressed" from="TitleUI/Buttons/Play" to="PlayMenuUI" method="_on_Play_pressed"]
 [connection signal="pressed" from="TitleUI/Buttons/Settings" to="TitleUI" method="_on_Settings_pressed"]
@@ -255,7 +348,14 @@ text = "Start"
 [connection signal="hide" from="SettingsUI" to="TitleUI" method="_on_SettingsUI_hide"]
 [connection signal="pressed" from="SettingsUI/VBoxContainer/WindowType/Fullscreen" to="SettingsUI" method="_on_Fullscreen_pressed"]
 [connection signal="pressed" from="SettingsUI/VBoxContainer/WindowType/Windowed" to="SettingsUI" method="_on_Windowed_pressed"]
+[connection signal="value_changed" from="SettingsUI/VBoxContainer/Master/MasterSlider" to="SettingsUI" method="_on_MasterSlider_value_changed"]
+[connection signal="value_changed" from="SettingsUI/VBoxContainer/Sound/SoundSlider" to="SettingsUI" method="_on_SoundSlider_value_changed"]
+[connection signal="value_changed" from="SettingsUI/VBoxContainer/Music/MusicSlider" to="SettingsUI" method="_on_MusicSlider_value_changed"]
 [connection signal="pressed" from="SettingsUI/SBack" to="SettingsUI" method="_on_SBack_pressed"]
 [connection signal="pressed" from="PlayMenuUI/PBack" to="TitleUI" method="_on_PBack_pressed"]
 [connection signal="pressed" from="PlayMenuUI/PBack" to="PlayMenuUI" method="_on_PBack_pressed"]
 [connection signal="pressed" from="PlayMenuUI/PStart" to="PlayMenuUI" method="_on_PStart_pressed"]
+[connection signal="pressed" from="PlayMenuUI/VBoxContainer/CounterNum/LeftCounterTri" to="PlayMenuUI" method="_on_LeftCounterTri_pressed"]
+[connection signal="pressed" from="PlayMenuUI/VBoxContainer/CounterNum/RightCounterTri" to="PlayMenuUI" method="_on_RightCounterTri_pressed"]
+[connection signal="text_changed" from="PlayMenuUI/VBoxContainer/NameEdits/Player1LineEdit" to="PlayMenuUI" method="_on_Player1LineEdit_text_changed"]
+[connection signal="text_changed" from="PlayMenuUI/VBoxContainer/NameEdits/Player2LineEdit" to="PlayMenuUI" method="_on_Player2LineEdit_text_changed"]

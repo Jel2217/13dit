@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=16 format=2]
+[gd_resource type="Theme" load_steps=17 format=2]
 
 [ext_resource path="res://Resources/Font.tres" type="DynamicFont" id=1]
 
@@ -116,6 +116,8 @@ corner_radius_bottom_left = 20
 corner_radius_top_right = 30
 corner_radius_bottom_right = 30
 
+[sub_resource type="StyleBoxFlat" id=19]
+
 [resource]
 default_font = ExtResource( 1 )
 Activated/styles/hover = SubResource( 6 )
@@ -134,3 +136,4 @@ Ingame/styles/pressed = SubResource( 18 )
 Ingame2/styles/hover = null
 Ingame2/styles/normal = SubResource( 16 )
 Ingame2/styles/pressed = null
+LineEdit/styles/normal = SubResource( 19 )

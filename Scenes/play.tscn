@@ -1,16 +1,20 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://Assets/flag.png" type="Texture" id=1]
-[ext_resource path="res://Assets/background.png" type="Texture" id=2]
+[ext_resource path="res://Assets/new_background.jpg" type="Texture" id=2]
 [ext_resource path="res://Assets/Menu_icon_icon-icons.com_71858.png" type="Texture" id=3]
 [ext_resource path="res://Resources/buttons.tres" type="Theme" id=4]
 [ext_resource path="res://tileset.tres" type="TileSet" id=5]
-[ext_resource path="res://Scenes/Game.gd" type="Script" id=6]
+[ext_resource path="res://Scripts/Game.gd" type="Script" id=6]
 [ext_resource path="res://Assets/Counter1.png" type="Texture" id=7]
-[ext_resource path="res://Assets/Counter2.png" type="Texture" id=8]
+[ext_resource path="res://Assets/clearcounter.png" type="Texture" id=8]
 [ext_resource path="res://Resources/blur.tres" type="Shader" id=9]
-[ext_resource path="res://Scenes/Winscreen.gd" type="Script" id=10]
-[ext_resource path="res://Scenes/Forfeitscreen.gd" type="Script" id=11]
+[ext_resource path="res://Scripts/Winscreen.gd" type="Script" id=10]
+[ext_resource path="res://Scripts/Forfeitscreen.gd" type="Script" id=11]
+[ext_resource path="res://Scripts/Menuscreen.gd" type="Script" id=12]
+[ext_resource path="res://Music/TownBGM_Complete.wav" type="AudioStream" id=13]
+[ext_resource path="res://Assets/mouse2.png" type="Texture" id=14]
+[ext_resource path="res://Scripts/Tutorialscreen.gd" type="Script" id=15]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends TileMap
@@ -29,37 +33,24 @@ var clear_sprite
 
 var timer_activated = false
 var timer = Timer.new()
-# Called when the node enters the scene tree for the first time.
+var sprite
+
+
+
 func _ready():
 	counter_sprite = load(\"res://Assets/Counter\"+player_num+\".png\")
 	clear_sprite = load(\"res://Assets/clearcounter.png\")
 	tiles_using = get_used_cells()
-	pass # Replace with function body.
+	
+	sprite = get_node(\"Player\" + player_num + \"Sprite\")
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	if turn_active:
-#		get_node(\"Player\" + player_num + \"Sprite\").texture = counter_sprite
-#		turn_active = false
-#		print(\"YES\")
-##		if tiles_using.size() != 0:
-##			set_cellv(tiles_using[-1], -1)
-##			tiles_using.resize(tiles_using.size()-1)
-##		tile_removed = false
-#	elif tile_removed:
-#		pass
-#		print(turn_active)
-#		get_node(\"Player\" + player_num + \"Sprite\").texture = clear_sprite
-#		if tiles_using.size() != 0:
-#			set_cellv(tiles_using[-1], -1)
-#			tiles_using.resize(tiles_using.size()-1)
-#		tile_removed = false
-##		tile_removed = false
-#
-	
-	
+
 func _process(delta):
+	if (sprite.texture == counter_sprite):
+		sprite.rotation = sprite.rotation + 1 * delta
+	else:
+		sprite.rotation = 0
 	if turn_active:
 		if tiles_using.size() == 0:
 			if timer_activated != true: 
@@ -71,7 +62,7 @@ func _process(delta):
 				timer_activated = true
 #				print(\"timer started\")
 		else:
-			get_node(\"Player\" + player_num + \"Sprite\").texture = counter_sprite
+			sprite.texture = counter_sprite
 			turn_active = false
 #			print(\"YES\")
 			if tiles_using.size() != 0:
@@ -81,7 +72,7 @@ func _process(delta):
 	elif tile_removed:
 		pass
 #		print(turn_active)
-		get_node(\"Player\" + player_num + \"Sprite\").texture = clear_sprite
+		sprite.texture = clear_sprite
 "
 
 [sub_resource type="GDScript" id=2]
@@ -99,31 +90,44 @@ var player_num = \"2\"
 var counter_sprite
 var clear_sprite
 
+var timer_activated = false
 var timer = Timer.new()
-# Called when the node enters the scene tree for the first time.
+var sprite
+
+var turn_skipped = false
+
 func _ready():
 	counter_sprite = load(\"res://Assets/Counter\"+player_num+\".png\")
 	clear_sprite = load(\"res://Assets/clearcounter.png\")
 	tiles_using = get_used_cells()
-	pass # Replace with function body.
+	
+	sprite = get_node(\"Player\" + player_num + \"Sprite\")
 
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if turn_skipped:
+		turn_skipped = false
+		sprite.texture = counter_sprite
+	
+	if (sprite.texture == counter_sprite):
+		sprite.rotation = sprite.rotation + 1 * delta
+	else:
+		sprite.rotation = 0
 	if turn_active:
-		print(tiles_using.size())
-		if tiles_using.size() == 0: 
-			timer.connect(\"timeout\", get_node(\"../../Winscreen\"),\"player_won\", [0, get_node(\"../../Game\").turn_count])
-			timer.wait_time = 3
-			timer.one_shot = true
-			add_child(timer)
-			timer.start()
-			print(\"timer started\")
+		if tiles_using.size() == 0:
+			if timer_activated != true: 
+				timer.connect(\"timeout\", get_node(\"../../Winscreen\"),\"player_won\", [0, get_node(\"../../Game\").turn_count])
+				timer.wait_time = 3
+				timer.one_shot = true
+				add_child(timer)
+				timer.start()
+				timer_activated = true
+#				print(\"timer started\")
 		else:
-			get_node(\"Player\" + player_num + \"Sprite\").texture = counter_sprite
+			sprite.texture = counter_sprite
 			turn_active = false
-			print(\"YES\")
+#			print(\"YES\")
 			if tiles_using.size() != 0:
 				set_cellv(tiles_using[-1], -1)
 				tiles_using.resize(tiles_using.size()-1)
@@ -131,9 +135,7 @@ func _process(delta):
 	elif tile_removed:
 		pass
 #		print(turn_active)
-		get_node(\"Player\" + player_num + \"Sprite\").texture = clear_sprite
-
-		
+		sprite.texture = clear_sprite
 "
 
 [sub_resource type="ShaderMaterial" id=3]
@@ -168,39 +170,94 @@ __meta__ = {
 [node name="Game" type="Node2D" parent="."]
 script = ExtResource( 6 )
 
-[node name="TileMap" type="TileMap" parent="Game"]
-modulate = Color( 1, 1, 1, 0.756863 )
+[node name="BgTiles" type="TileMap" parent="Game"]
+modulate = Color( 1, 1, 1, 0.682353 )
 tile_set = ExtResource( 5 )
 cell_size = Vector2( 98, 98 )
 format = 1
-tile_data = PoolIntArray( 65539, 0, 0, 65540, 0, 0, 65541, 0, 0, 65542, 0, 0, 65543, 0, 0, 65544, 0, 0, 65545, 0, 0, 131075, 0, 0, 131076, 0, 0, 131077, 0, 0, 131078, 0, 0, 131079, 0, 0, 131080, 0, 0, 131081, 0, 0, 196611, 0, 0, 196612, 0, 0, 196613, 0, 0, 196614, 0, 0, 196615, 0, 0, 196616, 0, 0, 196617, 0, 0, 262147, 0, 0, 262148, 0, 0, 262149, 0, 0, 262150, 0, 0, 262151, 0, 0, 262152, 0, 0, 262153, 0, 0, 327683, 0, 0, 327684, -1610612736, 0, 327685, -1610612736, 0, 327686, -1610612736, 0, 327687, -1610612736, 0, 327688, 0, 0, 327689, 0, 0, 393219, 0, 0, 393220, 0, 0, 393221, 0, 0, 393222, 0, 0, 393223, 0, 0, 393224, 0, 0, 393225, 0, 0, 458755, 6, 0, 458756, 6, 0, 458757, 6, 0, 458758, 6, 0, 458759, 6, 0, 458760, 6, 0, 458761, 6, 0 )
+tile_data = PoolIntArray( 65539, 8, 0, 65540, 8, 0, 65541, 8, 0, 65542, 8, 0, 65543, 8, 0, 65544, 8, 0, 65545, 8, 0, 131075, 8, 0, 131076, 8, 0, 131077, 8, 0, 131078, 8, 0, 131079, 8, 0, 131080, 8, 0, 131081, 8, 0, 196611, 8, 0, 196612, 8, 0, 196613, 8, 0, 196614, 8, 0, 196615, 8, 0, 196616, 8, 0, 196617, 8, 0, 262147, 8, 0, 262148, 8, 0, 262149, 8, 0, 262150, 8, 0, 262151, 8, 0, 262152, 8, 0, 262153, 8, 0, 327683, 8, 0, 327684, 8, 0, 327685, 8, 0, 327686, 8, 0, 327687, 8, 0, 327688, 8, 0, 327689, 8, 0, 393219, 8, 0, 393220, 8, 0, 393221, 8, 0, 393222, 8, 0, 393223, 8, 0, 393224, 8, 0, 393225, 8, 0 )
+
+[node name="TileMap" type="TileMap" parent="Game"]
+tile_set = ExtResource( 5 )
+cell_size = Vector2( 98, 98 )
+format = 1
+tile_data = PoolIntArray( 458755, 6, 0, 458756, 6, 0, 458757, 6, 0, 458758, 6, 0, 458759, 6, 0, 458760, 6, 0, 458761, 6, 0 )
 
 [node name="Player1Tiles" type="TileMap" parent="Game"]
-position = Vector2( 40, 0 )
-scale = Vector2( 0.75, 0.75 )
+position = Vector2( 30, 0 )
+scale = Vector2( 0.612, 0.612 )
 tile_set = ExtResource( 5 )
-cell_size = Vector2( 80, 80 )
+cell_size = Vector2( 98, 98 )
 format = 1
-tile_data = PoolIntArray( 131072, 1, 0, 131073, 1, 0, 196608, 1, 0, 196609, 1, 0, 262144, 1, 0, 262145, 1, 0, 327680, 1, 0, 327681, 1, 0, 393216, 1, 0, 393217, 1, 0, 458752, 1, 0, 458753, 1, 0, 524288, 1, 0, 524289, 1, 0, 589824, 1, 0, 589825, 1, 0, 655360, 1, 0, 655361, 1, 0, 720896, 1, 0, 720897, 1, 0 )
+tile_data = PoolIntArray( 131072, 9, 0, 131073, 9, 0, 196608, 9, 0, 196609, 9, 0, 262144, 9, 0, 262145, 9, 0, 327680, 9, 0, 327681, 9, 0, 393216, 9, 0, 393217, 9, 0, 458752, 9, 0, 458753, 9, 0, 524288, 9, 0, 524289, 9, 0, 589824, 9, 0, 589825, 9, 0, 655360, 9, 0, 655361, 9, 0, 720896, 9, 0, 720897, 9, 0 )
 script = SubResource( 1 )
 
 [node name="Player1Sprite" type="Sprite" parent="Game/Player1Tiles"]
-position = Vector2( 80, 80 )
+position = Vector2( 95, 98 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 7 )
 
 [node name="Player2Tiles" type="TileMap" parent="Game"]
-scale = Vector2( 0.75, 0.75 )
+position = Vector2( 50, 0 )
+scale = Vector2( 0.612, 0.612 )
 tile_set = ExtResource( 5 )
-cell_size = Vector2( 80, 80 )
+cell_size = Vector2( 98, 98 )
 format = 1
-tile_data = PoolIntArray( 131091, 4, 0, 131092, 4, 0, 196627, 4, 0, 196628, 4, 0, 262163, 4, 0, 262164, 4, 0, 327699, 4, 0, 327700, 4, 0, 393235, 4, 0, 393236, 4, 0, 458771, 4, 0, 458772, 4, 0, 524307, 4, 0, 524308, 4, 0, 589843, 4, 0, 589844, 4, 0, 655379, 4, 0, 655380, 4, 0, 720915, 4, 0, 720916, 4, 0, 786451, 4, 0 )
+tile_data = PoolIntArray( 131090, 11, 0, 131091, 11, 0, 131092, 4, 0, 196626, 11, 0, 196627, 11, 0, 196628, 4, 0, 262162, 11, 0, 262163, 11, 0, 262164, 4, 0, 327698, 11, 0, 327699, 11, 0, 327700, 4, 0, 393234, 11, 0, 393235, 11, 0, 393236, 4, 0, 458770, 11, 0, 458771, 11, 0, 458772, 4, 0, 524306, 11, 0, 524307, 11, 0, 524308, 4, 0, 589842, 11, 0, 589843, 11, 0, 589844, 4, 0, 655378, 11, 0, 655379, 11, 0, 655380, 4, 0, 720914, 11, 0, 720915, 11, 0, 720916, 4, 0, 786451, 11, 0 )
 script = SubResource( 2 )
 
 [node name="Player2Sprite" type="Sprite" parent="Game/Player2Tiles"]
-position = Vector2( 1600, 80 )
+position = Vector2( 1854.58, 98.0392 )
 scale = Vector2( 2, 2 )
 texture = ExtResource( 8 )
+
+[node name="Buttons" type="HBoxContainer" parent="."]
+margin_left = 171.0
+margin_top = 606.0
+margin_right = 644.0
+margin_bottom = 712.0
+
+[node name="Menu" type="Button" parent="Buttons"]
+margin_right = 50.0
+margin_bottom = 106.0
+rect_min_size = Vector2( 50, 50 )
+focus_mode = 0
+theme = ExtResource( 4 )
+theme_type_variation = "Ingame"
+enabled_focus_mode = 0
+icon = ExtResource( 3 )
+expand_icon = true
+
+[node name="Forfeit" type="Button" parent="Buttons"]
+margin_left = 54.0
+margin_right = 104.0
+margin_bottom = 106.0
+rect_min_size = Vector2( 50, 0 )
+focus_mode = 0
+theme = ExtResource( 4 )
+theme_type_variation = "Ingame"
+enabled_focus_mode = 0
+icon = ExtResource( 1 )
+expand_icon = true
+
+[node name="TurnCount" type="Label" parent="."]
+margin_left = 996.0
+margin_top = 637.0
+margin_right = 1150.0
+margin_bottom = 743.0
+rect_scale = Vector2( 0.75, 0.75 )
+theme = ExtResource( 4 )
+text = "Turn: 1"
+
+[node name="CurrentPlayer" type="Label" parent="."]
+margin_left = 296.0
+margin_top = 673.0
+margin_right = 1624.0
+margin_bottom = 779.0
+rect_scale = Vector2( 0.5, 0.5 )
+theme = ExtResource( 4 )
+text = "Player 1's turn"
+align = 1
 
 [node name="Winscreen" type="Panel" parent="."]
 pause_mode = 2
@@ -279,44 +336,6 @@ theme = ExtResource( 4 )
 text = "Turn: 8"
 align = 1
 
-[node name="Buttons" type="HBoxContainer" parent="."]
-margin_left = 171.0
-margin_top = 606.0
-margin_right = 644.0
-margin_bottom = 712.0
-
-[node name="Button" type="Button" parent="Buttons"]
-margin_right = 50.0
-margin_bottom = 106.0
-rect_min_size = Vector2( 50, 50 )
-focus_mode = 0
-theme = ExtResource( 4 )
-theme_type_variation = "Ingame"
-enabled_focus_mode = 0
-icon = ExtResource( 3 )
-expand_icon = true
-
-[node name="Forfeit" type="Button" parent="Buttons"]
-margin_left = 54.0
-margin_right = 104.0
-margin_bottom = 106.0
-rect_min_size = Vector2( 50, 0 )
-focus_mode = 0
-theme = ExtResource( 4 )
-theme_type_variation = "Ingame"
-enabled_focus_mode = 0
-icon = ExtResource( 1 )
-expand_icon = true
-
-[node name="TurnCount" type="Label" parent="."]
-margin_left = 996.0
-margin_top = 637.0
-margin_right = 1150.0
-margin_bottom = 743.0
-rect_scale = Vector2( 0.75, 0.75 )
-theme = ExtResource( 4 )
-text = "Turn: 1"
-
 [node name="Forfeitscreen" type="Panel" parent="."]
 pause_mode = 2
 visible = false
@@ -394,79 +413,162 @@ margin_top = 96.0
 margin_right = 1027.0
 margin_bottom = 645.0
 custom_styles/panel = SubResource( 4 )
-script = ExtResource( 10 )
+script = ExtResource( 12 )
 
 [node name="Color" type="Panel" parent="Menuscreen"]
 margin_right = 791.0
 margin_bottom = 549.0
 custom_styles/panel = SubResource( 5 )
-__meta__ = {
-"_edit_lock_": true
-}
 
-[node name="Buttons" type="HBoxContainer" parent="Menuscreen"]
-anchor_left = 0.072
-anchor_top = 0.309
-anchor_right = 0.072
-anchor_bottom = 0.309
-margin_left = 4.048
-margin_top = 219.359
-margin_right = 693.048
-margin_bottom = 329.359
-custom_constants/separation = 50
-alignment = 1
+[node name="Elements" type="VBoxContainer" parent="Menuscreen"]
+margin_left = 180.0
+margin_top = -9.0
+margin_right = 619.0
+margin_bottom = 621.0
 
-[node name="MainMenu" type="Button" parent="Menuscreen/Buttons"]
-margin_left = 19.0
-margin_right = 319.0
-margin_bottom = 110.0
-rect_min_size = Vector2( 300, 0 )
+[node name="Menu" type="Label" parent="Menuscreen/Elements"]
+margin_right = 439.0
+margin_bottom = 106.0
+theme = ExtResource( 4 )
+text = "Menu"
+align = 1
+
+[node name="Tutoral" type="Button" parent="Menuscreen/Elements"]
+margin_top = 110.0
+margin_right = 439.0
+margin_bottom = 216.0
+theme = ExtResource( 4 )
+theme_type_variation = "Base"
+text = "Tutorial"
+
+[node name="MainMenu" type="Button" parent="Menuscreen/Elements"]
+margin_top = 220.0
+margin_right = 439.0
+margin_bottom = 326.0
 theme = ExtResource( 4 )
 theme_type_variation = "Base"
 text = "Main Menu"
 
-[node name="Replay" type="Button" parent="Menuscreen/Buttons"]
-margin_left = 369.0
-margin_right = 669.0
-margin_bottom = 110.0
-rect_min_size = Vector2( 300, 0 )
+[node name="Restart" type="Button" parent="Menuscreen/Elements"]
+margin_top = 330.0
+margin_right = 439.0
+margin_bottom = 436.0
 theme = ExtResource( 4 )
 theme_type_variation = "Base"
-text = "Replay"
+text = "Restart"
 
-[node name="Results" type="Label" parent="Menuscreen"]
-margin_left = 283.0
-margin_top = -2.0
-margin_right = 443.0
-margin_bottom = 104.0
-rect_scale = Vector2( 1.5, 1.5 )
+[node name="Resume" type="Button" parent="Menuscreen/Elements"]
+margin_top = 440.0
+margin_right = 439.0
+margin_bottom = 546.0
 theme = ExtResource( 4 )
-text = "Results"
+theme_type_variation = "Base"
+text = "Resume"
+
+[node name="Tutorialscreen" type="Panel" parent="."]
+pause_mode = 2
+visible = false
+material = SubResource( 3 )
+margin_left = 236.0
+margin_top = 96.0
+margin_right = 1027.0
+margin_bottom = 645.0
+custom_styles/panel = SubResource( 4 )
+script = ExtResource( 15 )
+
+[node name="Color" type="Panel" parent="Tutorialscreen"]
+margin_right = 791.0
+margin_bottom = 549.0
+custom_styles/panel = SubResource( 5 )
+
+[node name="Menu" type="Label" parent="Tutorialscreen"]
+margin_left = 1.0
+margin_top = -10.0
+margin_right = 440.0
+margin_bottom = 96.0
+theme = ExtResource( 4 )
+text = "Tutorial"
 align = 1
 
-[node name="Winner" type="Label" parent="Menuscreen"]
-margin_left = 250.0
-margin_top = 133.0
-margin_right = 550.0
-margin_bottom = 263.0
-theme = ExtResource( 4 )
-text = "Player 1 won!"
-align = 1
+[node name="Elements" type="VBoxContainer" parent="Tutorialscreen"]
+margin_left = 180.0
+margin_top = 431.0
+margin_right = 619.0
+margin_bottom = 537.0
 
-[node name="Turn" type="Label" parent="Menuscreen"]
-margin_left = 287.0
-margin_top = 251.0
-margin_right = 526.0
-margin_bottom = 357.0
+[node name="Continue" type="Button" parent="Tutorialscreen/Elements"]
+margin_right = 439.0
+margin_bottom = 106.0
 theme = ExtResource( 4 )
-text = "Turn: 8"
-align = 1
+theme_type_variation = "Base"
+text = "Continue"
 
+[node name="Label" type="Label" parent="Tutorialscreen"]
+margin_left = 20.0
+margin_top = 72.0
+margin_right = 777.0
+margin_bottom = 562.0
+rect_scale = Vector2( 0.6, 0.6 )
+theme = ExtResource( 4 )
+text = "Get four counters in a row, vertically, horizontally, or diagonally, to win the game!"
+autowrap = true
+
+[node name="Forfeit" type="Label" parent="Tutorialscreen"]
+margin_left = 506.0
+margin_top = 356.0
+margin_right = 922.0
+margin_bottom = 462.0
+rect_scale = Vector2( 0.6, 0.6 )
+theme = ExtResource( 4 )
+text = "Press   to forfeit"
+
+[node name="Flag" type="Sprite" parent="Tutorialscreen/Forfeit"]
+position = Vector2( 158.501, 58.8335 )
+scale = Vector2( 0.104816, 0.104816 )
+texture = ExtResource( 1 )
+
+[node name="Click" type="Label" parent="Tutorialscreen"]
+margin_left = 504.0
+margin_top = 153.0
+margin_right = 969.0
+margin_bottom = 477.0
+rect_scale = Vector2( 0.6, 0.6 )
+theme = ExtResource( 4 )
+text = "Left click to drop the counter in the grid."
+autowrap = true
+
+[node name="Mouse" type="Label" parent="Tutorialscreen"]
+margin_left = 17.0
+margin_top = 278.0
+margin_right = 784.0
+margin_bottom = 493.0
+rect_scale = Vector2( 0.6, 0.6 )
+theme = ExtResource( 4 )
+text = "The mouse can be used to select what column to drop a counter in"
+autowrap = true
+
+[node name="Mouse2" type="Sprite" parent="Tutorialscreen"]
+position = Vector2( 624, 79 )
+scale = Vector2( 0.0741342, 0.0741342 )
+texture = ExtResource( 14 )
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+pause_mode = 2
+stream = ExtResource( 13 )
+volume_db = -8.35
+autoplay = true
+bus = "Music"
+
+[connection signal="pressed" from="Buttons/Menu" to="Menuscreen" method="_on_Menu_pressed"]
+[connection signal="pressed" from="Buttons/Forfeit" to="Forfeitscreen" method="_on_Forfeit_pressed"]
 [connection signal="pressed" from="Winscreen/Buttons/MainMenu" to="Winscreen" method="_on_MainMenu_pressed"]
 [connection signal="pressed" from="Winscreen/Buttons/Replay" to="Winscreen" method="_on_Replay_pressed"]
-[connection signal="pressed" from="Buttons/Forfeit" to="Forfeitscreen" method="_on_Forfeit_pressed"]
 [connection signal="pressed" from="Forfeitscreen/Buttons/Yes" to="Game" method="_on_Yes_pressed"]
 [connection signal="pressed" from="Forfeitscreen/Buttons/Yes" to="Forfeitscreen" method="_on_Yes_pressed"]
 [connection signal="pressed" from="Forfeitscreen/Buttons/No" to="Forfeitscreen" method="_on_No_pressed"]
-[connection signal="pressed" from="Menuscreen/Buttons/MainMenu" to="Menuscreen" method="_on_MainMenu_pressed"]
-[connection signal="pressed" from="Menuscreen/Buttons/Replay" to="Menuscreen" method="_on_Replay_pressed"]
+[connection signal="pressed" from="Menuscreen/Elements/Tutoral" to="Menuscreen" method="_on_Tutoral_pressed"]
+[connection signal="pressed" from="Menuscreen/Elements/Tutoral" to="Tutorialscreen" method="_on_Tutoral_pressed"]
+[connection signal="pressed" from="Menuscreen/Elements/MainMenu" to="Menuscreen" method="_on_MainMenu_pressed"]
+[connection signal="pressed" from="Menuscreen/Elements/Restart" to="Menuscreen" method="_on_Restart_pressed"]
+[connection signal="pressed" from="Menuscreen/Elements/Resume" to="Menuscreen" method="_on_Resume_pressed"]
+[connection signal="pressed" from="Tutorialscreen/Elements/Continue" to="Tutorialscreen" method="_on_Continue_pressed"]

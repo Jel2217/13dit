@@ -8,15 +8,16 @@ func _ready():
 func _on_Play_pressed():
 #	get_tree().change_scene("res://Scenes/play.tscn")
 	hide()
-	
-	pass # Replace with function body.
+	AudioStreamManager.play("res://Music/buttonclick.wav")
 
 
 func _on_Settings_pressed():
+	AudioStreamManager.play("res://Music/buttonclick.wav")
 	hide()
 
 
 func _on_Quit_pressed():
+	AudioStreamManager.play("res://Music/buttonclick.wav")
 	get_tree().quit()
 
 
