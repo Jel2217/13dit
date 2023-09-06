@@ -32,6 +32,7 @@ expand = true
 stretch_mode = 1
 
 [node name="TitleUI" type="Control" parent="."]
+visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 script = ExtResource( 5 )
@@ -102,7 +103,7 @@ margin_bottom = 114.0
 rect_min_size = Vector2( 400, 0 )
 focus_mode = 0
 theme = ExtResource( 8 )
-theme_type_variation = "Activated"
+theme_type_variation = "Deactivated"
 enabled_focus_mode = 0
 text = "Fullscreen"
 
@@ -113,7 +114,7 @@ margin_bottom = 114.0
 rect_min_size = Vector2( 400, 0 )
 focus_mode = 0
 theme = ExtResource( 8 )
-theme_type_variation = "Deactivated"
+theme_type_variation = "Activated"
 enabled_focus_mode = 0
 text = "Windowed"
 
@@ -217,6 +218,7 @@ theme_type_variation = "Base"
 text = "Back"
 
 [node name="PlayMenuUI" type="Control" parent="."]
+visible = false
 margin_right = 40.0
 margin_bottom = 40.0
 script = ExtResource( 10 )

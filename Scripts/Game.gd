@@ -4,6 +4,7 @@ extends Node2D
 onready var counter = preload("res://Scenes/Counter.tscn")
 onready var counter_1_sprite = preload("res://Assets/Counter1.png")
 onready var counter_2_sprite = preload("res://Assets/Counter2.png")
+#onready var winning_sprite = preload("res://Resources/wincounter.tres")
 
 var mouse_pos
 var board_tiles
@@ -82,12 +83,12 @@ func land_counter(tile_id, clear_tile_id, player):
 				print(names[winner.player-1] + " won!")
 				print(winner.counters)
 				for i in winner.counters:
-					tiles.set_cellv(i, 7)
+					tiles.set_cellv(i, 14)
 					pass
 			if turn == 0:
 				can_drop = false
 				timer.connect("timeout", get_node("../Winscreen"),"player_won", [player, turn_count])
-				timer.wait_time = 3
+				timer.wait_time = 1.5
 				timer.one_shot = true
 				add_child(timer)
 				timer.start()

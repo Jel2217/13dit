@@ -69,3 +69,9 @@ func _on_RightBoardTri_pressed():
 	if board_index >= board_sizes.size()-1:
 		$VBoxContainer/BoardNum/RightBoardTri.disabled = true
 	$VBoxContainer/BoardNum/LeftBoardTri.disabled = false
+
+func _input(event):
+	if event.is_action_pressed("ui_cancel"):
+		if self.visible:
+			_on_PBack_pressed()
+			get_node("../TitleUI")._on_PBack_pressed()

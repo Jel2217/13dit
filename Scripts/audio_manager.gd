@@ -25,7 +25,6 @@ func _on_stream_finished(stream):
 
 func play(sound_path):
 	queue.append(sound_path)
-	print("playinengg " + String(queue))
 
 
 func _process(delta):

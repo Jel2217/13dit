@@ -18,6 +18,7 @@ func _ready():
 
 func _on_Menu_pressed():
 	get_tree().paused = true
+	Global.window_open = true
 	AudioStreamManager.play("res://Music/buttonclick.wav")
 	show()
 
@@ -26,6 +27,7 @@ func _on_Resume_pressed():
 	AudioStreamManager.play("res://Music/buttonclick.wav")
 	hide()
 	get_tree().paused = false
+	Global.window_open = false
 
 
 func _on_Restart_pressed():
@@ -42,4 +44,15 @@ func _on_MainMenu_pressed():
 
 func _on_Tutoral_pressed():
 	AudioStreamManager.play("res://Music/buttonclick.wav")
+	
 	hide()
+
+func _input(event):
+   # Mouse in viewport coordinates.
+	if event.is_action_pressed("ui_cancel"):
+		if Global.window_open == false:
+			_on_Menu_pressed() 
+		elif get_node("../Tutorialscreen").visible == false:
+			_on_Resume_pressed()
+			get_tree().paused = false
+			

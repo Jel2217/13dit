@@ -12,7 +12,7 @@ func _ready():
 		get_tree().paused = true
 		Global.has_tutorial_displayed = true
 		show()
-		
+	Global.window_open = true
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -24,6 +24,7 @@ func _on_Continue_pressed():
 	AudioStreamManager.play("res://Music/buttonclick.wav")
 	get_tree().paused = false
 	hide()
+	Global.window_open = false
 
 
 func _on_Tutoral_pressed():

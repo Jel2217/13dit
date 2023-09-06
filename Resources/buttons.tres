@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=17 format=2]
+[gd_resource type="Theme" load_steps=19 format=2]
 
 [ext_resource path="res://Resources/Font.tres" type="DynamicFont" id=1]
 
@@ -95,26 +95,24 @@ bg_color = Color( 0.67451, 0.67451, 0.67451, 1 )
 [sub_resource type="StyleBoxFlat" id=17]
 bg_color = Color( 0.501961, 0.501961, 0.501961, 1 )
 corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
 
 [sub_resource type="StyleBoxFlat" id=14]
 corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
 
-[sub_resource type="StyleBoxFlat" id=18]
+[sub_resource type="StyleBoxFlat" id=21]
 bg_color = Color( 0.352941, 0.352941, 0.352941, 1 )
 corner_radius_top_left = 20
+
+[sub_resource type="StyleBoxFlat" id=20]
+bg_color = Color( 0.501961, 0.501961, 0.501961, 1 )
 corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
 
 [sub_resource type="StyleBoxFlat" id=16]
-corner_radius_top_right = 30
-corner_radius_bottom_right = 30
+corner_radius_top_right = 20
+
+[sub_resource type="StyleBoxFlat" id=22]
+bg_color = Color( 0.352941, 0.352941, 0.352941, 1 )
+corner_radius_top_right = 20
 
 [sub_resource type="StyleBoxFlat" id=19]
 
@@ -132,8 +130,8 @@ Deactivated/styles/pressed = SubResource( 11 )
 HSlider/styles/slider = SubResource( 12 )
 Ingame/styles/hover = SubResource( 17 )
 Ingame/styles/normal = SubResource( 14 )
-Ingame/styles/pressed = SubResource( 18 )
-Ingame2/styles/hover = null
+Ingame/styles/pressed = SubResource( 21 )
+Ingame2/styles/hover = SubResource( 20 )
 Ingame2/styles/normal = SubResource( 16 )
-Ingame2/styles/pressed = null
+Ingame2/styles/pressed = SubResource( 22 )
 LineEdit/styles/normal = SubResource( 19 )

@@ -12,7 +12,9 @@ config_version=4
 
 config/name="13DIT"
 run/main_scene="res://Scenes/titlescreen.tscn"
-config/icon="res://Assets/icon.png"
+boot_splash/show_image=false
+config/icon="res://Assets/Counter2.png"
+config/windows_native_icon="res://Resources/icon.ico"
 
 [autoload]
 
